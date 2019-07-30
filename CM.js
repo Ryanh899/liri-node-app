@@ -1,10 +1,9 @@
-var axios = require('axios')
+var axios = require('axios');
 
 
-var concerts = function () {
-    var artist = 'Bruno Mars'
+var Functions = function () {
 
-    this.convertTime = function(str) {
+    this.convertTime = function (str) {
         var time = str
 
         time = time.split(':'); // convert to array
@@ -40,25 +39,45 @@ var concerts = function () {
         return timeValue
     }
 
-    this.concert = function () {
+    this.concert = function (someFunc, artists) {
+        var artist = artists
         axios.get(`https://rest.bandsintown.com/artists/${artist}/events?app_id=codingbootcamp`).then(function (resp) {
                 var data = resp.data;
-                data.forEach((element, i) => {
-                    var date = resp.data[i].datetime.split('T')[1];
-                    var day = resp.data[i].datetime.split('T')[0]
-                    date = `${day}, ${convertTime(date)}`
-                    console.log(`Venue: ${data[i].venue.name} 
+                if (data.length > 0) {
+                    data.forEach((element, i) => {
+                        var date = resp.data[i].datetime.split('T')[1];
+                        var day = resp.data[i].datetime.split('T')[0]
+                        date = `${day}, ${someFunc(date)}`
+                        console.log(`Venue: ${data[i].venue.name} 
     Location: ${data[i].venue.city}, ${data[i].venue.country}
     Date: ${date}`)
-                });
+                    });
+                } else {
+                    console.log('This artist has 0 upcoming concerts')
+                }
             })
             .catch((err) => {
                 console.log(err)
             });
+    }
+    this.movies = function (query) {
+        axios.get(`http://www.omdbapi.com/?apikey=88ef0e87&t=${query}`).then(function(resp) {
+            var data = resp.data; 
+            console.log(`Title: ${data.Title} 
+    Release Year: ${data.Year}
+    IMDB Rating: ${data.imdbRating}
+    Rotten Tomatoes Rating: ${data.Ratings[1].Value} 
+    Production Country: ${data.Country}
+    Language(s): ${data.Language}
+    Plot: ${data.Plot}
+    Actors: ${data.Actors}`)
+        })
+        .catch((err) => console.log(err))
     }
 }
 
 
 
 
-module.exports = concerts
+
+module.exports = Functions;
